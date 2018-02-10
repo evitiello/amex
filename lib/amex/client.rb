@@ -53,6 +53,8 @@ module Amex
       xml = Nokogiri::XML(response.body)
       xml = xml.css("XMLResponse")
 
+      #puts xml
+
       if xml.css('ServiceResponse Status').text != "success"
         raise "There was a problem logging in to American Express."
       else
@@ -71,8 +73,8 @@ module Amex
 
           # Now let's go through the AccountSummaryData to find all the
           # various bits of balance information
-          item.css('AccountSummaryData param').each do |attribute|
-            account_details[attribute.attr('name')] = attribute.text
+          item.css('AccountSummaryData SummaryElement').each do |attribute|
+            account_details[attribute.attr('name')] = attribute.attr('value')
           end
 
           # We have all the attributes ready to go, so let's make an
@@ -89,10 +91,9 @@ module Amex
 
         end
         accounts
-
       end
-
     end
+
 
     # Generates the XML to send in a request to fetch transactions for a card
     #
